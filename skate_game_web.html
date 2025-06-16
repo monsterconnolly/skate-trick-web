@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Skate Game Web</title>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <style>
+    body {
+      background-color: #78c269;
+      font-family: 'Press Start 2P', cursive;
+      color: #2e2e2e;
+      padding: 20px;
+    }
+    h1 {
+      font-size: 20px;
+      margin-bottom: 10px;
+    }
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      background-color: #f4f4f4;
+      padding: 20px;
+      border: 5px solid #444;
+      box-shadow: 4px 4px #222;
+    }
+    label, select, input[type="number"] {
+      display: block;
+      margin-bottom: 10px;
+    }
+    .checkboxes label {
+      display: block;
+    }
+    button {
+      margin-top: 10px;
+      padding: 10px;
+      font-family: inherit;
+      font-size: 14px;
+    }
+    #output {
+      margin-top: 20px;
+      font-size: 12px;
+      white-space: pre-wrap;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Skate Trick Generator</h1>
+
+    <label for="level">Select difficulty:</label>
+    <select id="level">
+      <option value="beginner">Beginner</option>
+      <option value="intermediate">Intermediate</option>
+      <option value="advanced">Advanced</option>
+    </select>
+
+    <div class="checkboxes">
+      <label><input type="checkbox" value="flat" checked /> Flat</label>
+      <label><input type="checkbox" value="rail" /> Rail</label>
+      <label><input type="checkbox" value="ramp" /> Ramp</label>
+      <label><input type="checkbox" value="manny pad" /> Manny Pad</label>
+    </div>
+
+    <label for="lineLength">Number of tricks in line:</label>
+    <input type="number" id="lineLength" value="1" min="1" max="5" />
+
+    <button onclick="generateTricks()">Generate Trick(s)</button>
+
+    <div id="output"></div>
+  </div>
+
+  <script>
+    const stances = {
+      beginner: [""],
+      intermediate: ["regular", "fakie"],
+      advanced: ["regular", "fakie", "nollie", "switch"]
+    };
+
+    const spins = {
+      beginner: [""],
+      intermediate: ["", "180"],
+      advanced: ["", "180", "360"]
+    };
+
+    const flips = {
+      flat: {
+        beginner: ["ollie", "shuv", "kickflip", "heelflip"],
+        intermediate: ["kickflip", "heelflip", "fs shuv", "bs shuv"],
+        advanced: ["kickflip", "heelflip", "fs shuv", "bs shuv", "hardflip", "inward heel", "tre flip", "lazer flip"]
+      },
+      rail: {
+        beginner: ["boardslide", "50-50"],
+        intermediate: ["boardslide", "50-50", "smith", "feeble"],
+        advanced: ["crook", "bluntslide", "noseslide", "nosegrind"]
+      },
+      ramp: {
+        beginner: ["rock to fakie", "axle stall"],
+        intermediate: ["rock n roll", "nose stall"],
+        advanced: ["kickflip indy", "bs disaster", "fs disaster"]
+      },
+      "manny pad": {
+        beginner: ["manual", "nose manual"],
+        intermediate: ["manual", "nose manual", "kickflip manual"],
+        advanced: ["kickflip manual", "nose manny", "heelflip nose manny"]
+      }
+    };
+
+    function randomChoice(arr) {
+      return arr[Math.floor(Math.random() * arr.length)];
+    }
+
+    function generateTricks() {
+      const level = document.getElementById("level").value;
+      const lineLength = parseInt(document.getElementById("lineLength").value);
+      const checkboxes = document.querySelectorAll(".checkboxes input:checked");
+      const selectedObstacles = Array.from(checkboxes).map(cb => cb.value);
+
+      if (selectedObstacles.length === 0) {
+        document.getElementById("output").textContent = "Please select at least one obstacle.";
+        return;
+      }
+
+      const tricks = [];
+      for (let i = 0; i < lineLength; i++) {
+        const obs = randomChoice(selectedObstacles);
+        const stance = randomChoice(stances[level]);
+        const spin = randomChoice(spins[level]);
+        const flip = randomChoice(flips[obs][level]);
+        tricks.push(`${stance} ${spin} ${flip} on ${obs}`.trim());
+      }
+
+      document.getElementById("output").textContent = tricks.join(" -> ");
+    }
+  </script>
+</body>
+</html>
